@@ -3,6 +3,7 @@ package com.electoral.results_service.exception;
 import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -29,6 +30,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidation(ConstraintViolationException ex, HttpServletRequest request) {
+        ex.printStackTrace();
+        return ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("BAD_REQUEST")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingParam(MissingServletRequestParameterException ex, HttpServletRequest request) {
         ex.printStackTrace();
         return ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
